@@ -1,0 +1,18 @@
+/* We are selecting from the ethereum transactions table */
+SELECT
+  DATE_FORMAT(block_time, '%W') AS day_of_week,
+  EXTRACT(hour FROM block_time) AS hour_of_day,
+  AVG(gas_price / 1e9) AS avg_gas_gwei
+FROM ethereum.transactions 
+/* 4. Filter the data to keep it relevant */
+/* We only look at the last 30 days so the data is recent/useful */
+WHERE
+  block_time > CURRENT_TIMESTAMP - INTERVAL '30' day
+  AND EXTRACT(hour FROM block_time) BETWEEN 9 AND 17
+  AND EXTRACT(dow FROM block_time) BETWEEN 1 AND 5 /* Filtering out the time for work hours only */
+GROUP BY
+  1,
+  2
+ORDER BY
+  day_of_week,
+  hour_of_day
